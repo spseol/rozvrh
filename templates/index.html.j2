@@ -1,0 +1,97 @@
+{% from "table.html.j2" import render_rozvrh_table, render_zmeny_table %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>rozvrh{{ ' | '+trida_from_url if trida_from_url else '' }}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style media="screen">
+            html {
+                font-size: 1.1em;
+                background-color: silver;
+            }
+            body { margin: 0; }
+            .scroll {
+                width: 100%;
+                overflow-x: auto;
+            }
+            table {
+                border-collapse: collapse;
+                background-color: white;
+            }
+            table:not(:first-of-type) caption {
+                margin-top: 1em;
+                padding-top: 1em;
+                border-top: solid;
+            }
+            td {
+                text-align: center;
+                border-style: solid;
+                border-color: gray;
+                padding: 0.2em;
+            }
+            caption {
+                font-size: 2em;
+                text-align: left;
+                padding-left: 45vw;
+            }
+            thead, sub {
+                color: #333;
+            }
+            .odpada {
+                background-color: #faa;
+                text-decoration: line-through;
+            }
+            .zmena {
+                background-color: #ffa;
+                font-weight: bold;
+            }
+            .navic {
+                background-color: #afa;
+                font-weight: bold;
+            }
+            ul.zmeny:empty::after {
+                content: "Žádné změny";
+                font-style: italic;
+            }
+            aside {
+                text-align: right;
+                font-size: 0.9rem;
+                color: #555;
+            }
+            aside a { color: #555; }
+            .joke { font-style: italic; color: gray; font-size: 0.8rem; }
+        </style>
+    </head>
+    <body>
+        <aside>
+            Chyby v rozvrhu nebo změnách prosím hlašte na
+            <a href="mailto:testedbyn0rTh@gmail.com">testedbyn0rTh@gmail.com</a>
+            <br>
+            <span class="joke">
+                Všechny postavy a události jsou smyšlené. Jakákoli podobnost se
+                skutečnými třídami či kantory je čistě náhodná.
+            </span>
+        </aside>
+        {% for rozvrh in rozvrhy %}
+            {{ render_rozvrh_table(rozvrh) }}
+            {% for z in zmeny %}
+                {{ render_zmeny_table(z, rozvrh['trida']) }}
+            {% endfor %}
+        {% else %}
+            {% if trida_from_url %}
+                <i>Žádný výsledek pro {{ trida_from_url }}, zkontroluj url.</i>
+            {% endif %}
+        {% endfor %}
+        <hr />
+        {% if missing %}
+            <p>missing: {{missing}}</p>
+        {% endif %}
+        {% if trida_from_url == '*' %}
+            <h2>Všechny změny</h2>
+            {% for z in zmeny %}
+                {{ render_zmeny_table(z) }}
+            {% endfor %}
+        {% endif %}
+    </body>
+</html>

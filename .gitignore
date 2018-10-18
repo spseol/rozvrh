@@ -1,0 +1,9 @@
+*.pyc
+__pycache__/
+bup/
+updater/SENT_ROZVRH
+updater/SENT_ZMENY
+updater/tmp
+updater/target_url
+*.json
+*.err.txt

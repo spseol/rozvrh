@@ -1,0 +1,90 @@
+{% macro render_subject(itm) %}
+    <div class="{{itm['zmena']}}" title="{{itm['title']}}">
+        {{- itm['subject'] -}}
+        {%- if itm['presun'] -%}
+            <sub class="zmena">{{ itm['presun'] }}</sub>
+        {%- else -%}
+            <sub>{{ itm['room'] }}</sub>
+        {%- endif -%}
+        <br />
+        {%- if itm['supl'] -%}
+            <sub class="zmena">{{ itm['supl'] }}</sub>
+        {%- else -%}
+            <sub>{{ itm['teacher'] }}</sub>
+        {%- endif -%}
+        {%- if itm['group'] -%}
+            <sub>{{ itm['group'] }}</sub>
+        {%- endif -%}
+    </div>
+{% endmacro %}
+
+{% macro render_rozvrh_row(row) %}
+    {%- for itm in row %}
+        <td>
+            {%- if itm is string %}
+                {{ itm }}
+            {%- elif itm is mapping %}
+                {{ render_subject(itm) }}
+            {%- elif itm is iterable %}
+                {%- for i in itm %}
+                    {{ render_subject(i) }}
+                    {%- if not loop.last %}
+                        <hr />
+                    {%- endif %}
+                {%- endfor %}
+            {%- endif %}
+        </td>
+    {%- endfor %}
+{% endmacro %}
+
+{% macro render_rozvrh_table(rozvrh) %}
+
+<section class="scroll">
+    <table class="{{rozvrh['trida']}}">
+        {%- if rozvrh['trida'] %}
+            <caption>{{ rozvrh['trida'] }}</caption>
+        {%- endif %}
+        <thead>
+            <tr>
+                <td></td>
+                {{ render_rozvrh_row(rozvrh['times']) }}
+            </tr>
+        </thead>
+        <tbody>
+            {%- for day in ('mon', 'tue', 'wed', 'thu', 'fri') %}
+                <tr class="{{day}}">
+                    <td>{{ g.days[day] }}</td>
+                    {{ render_rozvrh_row(rozvrh[day]) }}
+                </tr>
+            {%- endfor %}
+        </tbody>
+    </table>
+</section>
+{% endmacro %}
+
+
+{% macro render_zmena(zmena, with_trida) %}
+    <li>
+        {% if with_trida -%}
+            <strong>{{ zmena['trida'] }}</strong>
+        {% endif -%}
+        {{ zmena['hodina'] }}.Hod
+        <sub>{{ zmena['skupina'] }}</sub>
+        {{ zmena['ucitel'] }}
+        <strong>{{ zmena['akce'] }}</strong>
+        {{ zmena['predmet'] }}
+        <sub>{{ zmena['mistnost'] }}</sub>
+        <i>{{ zmena['pozn'] }}</i>
+    </li>
+{% endmacro %}
+
+{% macro render_zmeny_table(zmeny, trida_from_url) %}
+    <h4>Změny {{ zmeny['valid'] }}</h4>
+    <ul class="zmeny">
+        {%- for zmena in zmeny['zmeny'] -%}
+            {%- if not trida_from_url or zmena['trida'] == trida_from_url %}
+                {{ render_zmena(zmena, not trida_from_url) }}
+            {% endif -%}
+        {%- endfor -%}
+    </ul>
+{% endmacro %}
