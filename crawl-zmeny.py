@@ -43,18 +43,22 @@ class ZmenySpider(scrapy.Spider):
     start_urls = ['https://www.spseol.cz/data/rozvrhy/suplobec.htm']
 
     def parse(self, response):
-        zmeny = Zmeny()
+        all_zmeny = [Zmeny()]
         for val in response.css('body > p.textlarge_3::text'):
-            zmeny.possible_validity = val.extract().split()[-1]
+            all_zmeny[-1].possible_validity = val.extract().split()[-1]
+            if all_zmeny[-1].validity:
+                all_zmeny.append(Zmeny())
 
-        supltrid = response.css('table.tb_supltrid_3')
-        for tr in supltrid.css('tr:not(:first-child)'):
-            zmeny.add(*strip_all(tr.css('td ::text').extract()))
+        for i, supltrid in enumerate(response.css('table.tb_supltrid_3')):
+            for tr in supltrid.css('tr:not(:first-child)'):
+                all_zmeny[i].add(*strip_all(tr.css('td ::text').extract()))
 
-        suplucit = response.css('table.tb_suplucit_3')
-        for tr in suplucit.css('tr:not(:first-child)'):
-            zmeny.add_ucitel(*strip_all(tr.css('td ::text').extract()))
+        for i, suplucit in enumerate(response.css('table.tb_suplucit_3')):
+            for tr in suplucit.css('tr:not(:first-child)'):
+                all_zmeny[i].add_ucitel(*strip_all(tr.css('td ::text').extract()))
 
-        yield {
-            'valid': zmeny.validity,
-            'zmeny': zmeny.zmeny}
+        for zmeny in all_zmeny:
+            if zmeny.validity:
+                yield {
+                    'valid': zmeny.validity,
+                    'zmeny': zmeny.zmeny}
