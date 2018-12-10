@@ -1,4 +1,5 @@
 import scrapy
+from re import fullmatch
 from functools import partial
 from operator import methodcaller
 
@@ -25,13 +26,20 @@ class Zmeny:
             self.last_trida = trida
         else:
             trida = self.last_trida
+        if not skupina:
+            skupina = ''
+        elif not skupina.startswith('('):
+            skupina = '({})'.format(skupina)
         hodina = int(hodina.split('.')[0])
         o = dict(locals())
         del o['self']
         self.zmeny.append(o)
 
     def add_ucitel(self, ucitel, hodina, akce, predmet, trida, mistnost, comment):
-        self.add(ucitel, hodina, trida, '', mistnost, akce, predmet, comment)
+        skupina = ''
+        if '(' in trida and trida.endswith(')'):
+            trida, skupina = fullmatch(r'(.*?)\s*(\(.*\))?', trida).groups()
+        self.add(ucitel, hodina, trida, skupina, mistnost, akce, predmet, comment)
 
 
 

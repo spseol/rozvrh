@@ -147,6 +147,8 @@ def handle_supluje(subj, zmena):
         subj['zmena'] = 'zmena'
     if zmena['mistnost'] and subj['room'] != zmena['mistnost']:
         subj['presun'] = zmena['mistnost']
+    if zmena['skupina'] and subj['group'] != zmena['skupina']:
+        subj['new-grp'] = zmena['skupina']
     subj['supl'] = zmena['ucitel']
     subj['title'] = form_title(zmena)
     return subj

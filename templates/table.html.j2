@@ -12,7 +12,9 @@
         {%- else -%}
             <sub>{{ itm['teacher'] }}</sub>
         {%- endif -%}
-        {%- if itm['group'] -%}
+        {%- if itm['new-grp'] -%}
+            <sub class="zmena">{{ itm['new-grp'] }}</sub>
+        {%- elif itm['group'] -%}
             <sub>{{ itm['group'] }}</sub>
         {%- endif -%}
     </div>
