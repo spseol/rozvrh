@@ -110,7 +110,7 @@ def _build_subj(_zmena, **add):
     return dict(subj, **add)
 
 def handle_odpada(subj, zmena):
-    if subj and subj['subject'] == zmena['predmet']:
+    if subj and (subj['subject'] == zmena['predmet'] or 'zmena' not in subj):
         subj['zmena'] = 'odpada'
         subj['title'] = form_title(zmena)
     return subj
